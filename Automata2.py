@@ -45,7 +45,7 @@ def guardar_resultados(tablero, secuencia, inicio=4):
 
 
 def generar_secuencia_aleatoria(longitud, letras):
-    secuencia = random.choices(letras, k=longitud) + ["blanco"]
+    secuencia = random.choices(letras, k=longitud) + ["negro"]
     return secuencia
 
 
