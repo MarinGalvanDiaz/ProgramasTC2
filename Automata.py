@@ -8,12 +8,14 @@ def movimientos_posibles(x, y):
     return [(x + dx, y + dy) for dx, dy in direcciones if 0 <= x + dx < 4 and 0 <= y + dy < 4]
 
 def guardar_resultados(secuencia, x=0, y=0):
-    with open("caminos.txt", "w") as f:
+    with open("caminos.txt", "w") as f_cam, open("ganadores.txt", "w") as f_gan:
         def backtrack(cx, cy, index, ruta):
             if index == len(secuencia):
-                f.write(f"{ruta}\n")
-                if ruta[-1] == (3, 3):
-                    f.write("GANADOR!\n")
+                ruta_str = f"{ruta}\n"
+                f_cam.write(ruta_str)  # Escribir en caminos.txt
+                if ruta[-1] == (3, 3):  # Si es una ruta ganadora
+                    f_cam.write("GANADOR!\n")  # También marcar en caminos.txt
+                    f_gan.write(ruta_str)  # Guardar en ganadores.txt
                 return
 
             opciones = [m for m in movimientos_posibles(cx, cy) if es_casilla_blanca(*m) == (secuencia[index] == "B")]
