@@ -46,13 +46,16 @@ def guardar_resultados(tablero, secuencia, inicio=1):
 
 def generar_secuencia_aleatoria(longitud, letras):
     secuencia = random.choices(letras, k=longitud) + ["blanco"]
+    with open("secuencia.txt", "w") as f_secu:
+        secu = f"{secuencia}\n"
+        f_secu.write(secu)
     return secuencia
 
 
 # Inicializar tablero y ejecutar
 if __name__ == "__main__":
     tablero = generar_tablero()
-    movimientos = 5
+    movimientos = 10
     secuencia2 = generar_secuencia_aleatoria(movimientos-1, ["blanco", "negro"])
     guardar_resultados(tablero, secuencia2)
 
@@ -62,4 +65,12 @@ if __name__ == "__main__":
 
     rutas_a = Ju.leer_rutas("ganadores.txt")
     rutas_b = Ju.leer_rutas("ganadores2.txt")
-    Ju.jugar(rutas_a, rutas_b)
+    cadenaA = Ju.leer_rutas("secuencia.txt")
+    cadenaB = Ju.leer_rutas("secuencia2.txt")
+
+    root = Ju.tk.Tk()
+    app = Ju.Ajedrez(root, rutas_a, rutas_b, cadenaA, cadenaB)
+    root.mainloop()
+    """rutas_a = Ju.leer_rutas("ganadores.txt")
+    rutas_b = Ju.leer_rutas("ganadores2.txt")
+    Ju.jugar(rutas_a, rutas_b)"""

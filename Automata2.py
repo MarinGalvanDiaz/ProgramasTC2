@@ -46,6 +46,9 @@ def guardar_resultados(tablero, secuencia, inicio=4):
 
 def generar_secuencia_aleatoria(longitud, letras):
     secuencia = random.choices(letras, k=longitud) + ["negro"]
+    with open("secuencia2.txt", "w") as f_secu:
+        secu = f"{secuencia}\n"
+        f_secu.write(secu)
     return secuencia
 
 
