@@ -1,6 +1,6 @@
 import random
 import tkinter as tk
-from tkinter import messagebox
+
 
 
 def leer_rutas(archivo):
@@ -19,7 +19,7 @@ class Ajedrez:
         self.iniciar_juego()
 
     def setup_gui(self):
-        self.master.title("Juego de Fichas Automático")
+        self.master.title("Tablero de Ajedrez DFNA")
 
         # Frame principal
         self.main_frame = tk.Frame(self.master)
