@@ -50,7 +50,8 @@ def generar_secuencia_aleatoria(longitud, letras):
 
 
 # Inicializar tablero y ejecutar
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     tablero = generar_tablero()
-    secuencia2 = generar_secuencia_aleatoria(15, ["blanco", "negro"])
-    guardar_resultados(tablero, secuencia2)
+    movimientos = 5
+    secuencia2 = generar_secuencia_aleatoria(movimientos-1, ["blanco", "negro"])
+    guardar_resultados(tablero, secuencia2)"""

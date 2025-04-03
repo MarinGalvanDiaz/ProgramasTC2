@@ -1,61 +1,108 @@
 import random
+import time
 
 
 def leer_rutas(archivo):
     with open(archivo, "r") as f:
-        return [eval(f.readline().strip())]  # Leer solo la primera ruta
+        return [eval(line.strip()) for line in f.readlines()]
+
+
+def imprimir_tablero(pos_a, pos_b):
+    tablero = ["."] * 16
+    tablero[pos_a - 1] = "A"
+    tablero[pos_b - 1] = "B"
+    for i in range(0, 16, 4):
+        print(" ".join(tablero[i:i + 4]))
+    print("\n")
 
 
 def jugar(rutas_a, rutas_b):
-    pos_a, pos_b = rutas_a[0][0], rutas_b[0][0]  # Posiciones iniciales
+    rutas_a[0] = random.choice(rutas_a)
+    rutas_b[0] = random.choice(rutas_b)
 
-    index_a, index_b = 0, 0  # Índices en las rutas
-    turno = random.choice(["A", "B"])  # Elegir quién empieza
+    pos_a, pos_b = rutas_a[0][0], rutas_b[0][0]
+    index_a, index_b = 0, 0
+    turno = random.choice(["A", "B"])
+
+    cedidos_consecutivos = 0  # Para contar turnos consecutivos cedidos
+    cedido_a, cedido_b = False, False  # Indica si A o B cedió el turno
 
     print(f"Rutas elegidas:\nA: {rutas_a[0]}\nB: {rutas_b[0]}\n")
 
-    while pos_a != 16 and pos_b != 13:  # A gana al llegar a 16, B a 13
-        print(pos_a, pos_b)
+    while index_a < len(rutas_a[0]) - 1 or index_b < len(rutas_b[0]) - 1:
+        print(f"Turno de {turno}: A en {pos_a}, B en {pos_b}")
+        imprimir_tablero(pos_a, pos_b)
+        time.sleep(1.5)
+
         if turno == "A":
-            # Intentar moverse a la siguiente posición en la ruta de A
-            if index_a + 1 < len(rutas_a[0]):
-                nueva_pos = rutas_a[0][index_a + 1]
-                print(f"A intenta moverse de {pos_a} a {nueva_pos}")
-                if nueva_pos != pos_b:  # Verificar que la casilla no esté ocupada
-                    pos_a = nueva_pos
-                    index_a += 1
-                else:
-                    print(f"A no puede moverse a {nueva_pos}, cede el paso.")
-            else:
-                print(f"A no tiene más movimientos, cede el paso.")
+            nuevo_index, nueva_ruta, nueva_pos, movio = mover_ficha("A", rutas_a, index_a, pos_b)
+            index_a, rutas_a, pos_a = nuevo_index, nueva_ruta, nueva_pos
+            if index_a == len(rutas_a[0]) - 1 and pos_a == 16:  # Verifica si A ganó
+                print("\n¡Ganador: A!")
+                break  # Termina el juego si A gana
+
+            if not movio:  # Si A cedió el turno
+                cedido_a = True
+            turno = "B" if movio else "A"  # Solo cambia si A se movió
+
         else:
-            # Intentar moverse a la siguiente posición en la ruta de B
-            if index_b + 1 < len(rutas_b[0]):
-                nueva_pos = rutas_b[0][index_b + 1]
-                print(f"B intenta moverse de {pos_b} a {nueva_pos}")
-                if nueva_pos != pos_a:  # Verificar que la casilla no esté ocupada
-                    pos_b = nueva_pos
-                    index_b += 1
-                else:
-                    print(f"B no puede moverse a {nueva_pos}, cede el paso.")
-            else:
-                print(f"B no tiene más movimientos, cede el paso.")
+            nuevo_index, nueva_ruta, nueva_pos, movio = mover_ficha("B", rutas_b, index_b, pos_a)
+            index_b, rutas_b, pos_b = nuevo_index, rutas_b, nueva_pos
+            if index_b == len(rutas_b[0]) - 1 and pos_b == 13:  # Verifica si B ganó
+                print("\n¡Ganador: B!")
+                break  # Termina el juego si B gana
 
-        print(f"Estado: A -> {pos_a}, B -> {pos_b}\n")
-        turno = "B" if turno == "A" else "A"  # Cambiar turno
+            if not movio:  # Si B cedió el turno
+                cedido_b = True
+            turno = "A" if movio else "B"  # Solo cambia si B se movió
 
-    if pos_a == 16:
-        ganador = "A"  # A gana al llegar a la casilla 16
-    elif pos_b == 13:
-        ganador = "B"  # B gana al llegar a la casilla 13
-    else:
-        ganador = random.choice(["A", "B"])  # Elegir ganador aleatoriamente si ambos llegan al mismo tiempo
+        # Verificar si ambos cedieron el turno consecutivamente
+        if cedido_a and cedido_b:
+            print("\n¡Nadie ganó! Ambos cedieron el turno consecutivamente.")
+            break  # Termina el juego si ambos cedieron el turno
 
-    print(f"¡Ganador: {ganador}!")
+        # Si un jugador cedió el turno, reiniciar la bandera del otro jugador
+        if cedido_a:
+            cedido_a = False
+        if cedido_b:
+            cedido_b = False
+
+
+def mover_ficha(ficha, rutas, index, pos_oponente):
+    ruta_actual = rutas[0]
+
+    # Intentar moverse en la ruta actual
+    if index + 1 < len(ruta_actual):
+        nueva_pos = ruta_actual[index + 1]
+        # Verificar que la posición siguiente no esté ocupada por la otra ficha
+        if nueva_pos != pos_oponente:
+            print(f"{ficha} se mueve a {nueva_pos}")
+            return index + 1, rutas, nueva_pos, True
+
+    # Buscar todas las rutas posibles con la misma posición en el índice actual
+    rutas_posibles = []
+    for nueva_ruta in rutas:
+        if len(nueva_ruta) > index + 1 and nueva_ruta[index] == ruta_actual[index]:
+            nueva_pos = nueva_ruta[index + 1]
+            # Verificar que la nueva posición no esté ocupada por la otra ficha
+            if nueva_pos != pos_oponente:
+                rutas_posibles.append(nueva_ruta)
+
+    # Si se encontró alguna ruta válida para moverse
+    if rutas_posibles:
+        nueva_ruta = rutas_posibles[0]  # Seleccionar una ruta válida aleatoriamente
+        rutas[0] = nueva_ruta  # Actualiza la ruta seleccionada en rutas[0]
+        nueva_pos = nueva_ruta[index + 1]  # Obtener la nueva posición desde la ruta seleccionada
+        print(f"{ficha} cambia a nueva ruta: {nueva_ruta}")
+        print(f"{ficha} se mueve a {nueva_pos}")
+        return index + 1, rutas, nueva_pos, True
+
+    # Si no encuentra movimiento, cede el turno
+    print(f"{ficha} no tiene movimientos válidos, cede turno.")
+    return index, rutas, ruta_actual[index], True  # Mantiene su posición y cede turno
 
 
 # Cargar rutas y jugar
-rutas_a = leer_rutas("ganadores.txt")
+"""rutas_a = leer_rutas("ganadores.txt")
 rutas_b = leer_rutas("ganadores2.txt")
-print(rutas_a,rutas_b)
-jugar(rutas_a, rutas_b)
+jugar(rutas_a, rutas_b)"""

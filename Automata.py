@@ -1,6 +1,6 @@
 import random
-
-
+import Automata2 as Au2
+import Juego as Ju
 def generar_tablero():
     tablero = {
         1: {"color": "blanco", "movimientos": [2, 5, 6]},
@@ -52,5 +52,14 @@ def generar_secuencia_aleatoria(longitud, letras):
 # Inicializar tablero y ejecutar
 if __name__ == "__main__":
     tablero = generar_tablero()
-    secuencia2 = generar_secuencia_aleatoria(15, ["blanco", "negro"])
+    movimientos = 5
+    secuencia2 = generar_secuencia_aleatoria(movimientos-1, ["blanco", "negro"])
     guardar_resultados(tablero, secuencia2)
+
+    tablero2 = Au2.generar_tablero()
+    secuencia3 = Au2.generar_secuencia_aleatoria(movimientos - 1, ["blanco", "negro"])
+    Au2.guardar_resultados(tablero2, secuencia3)
+
+    rutas_a = Ju.leer_rutas("ganadores.txt")
+    rutas_b = Ju.leer_rutas("ganadores2.txt")
+    Ju.jugar(rutas_a, rutas_b)
