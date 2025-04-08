@@ -144,6 +144,12 @@ if __name__ == "__main__":
         Tra.graficar_traza(secuencia5, rutas6)
 
         # Iniciar interfaz gráfica
+        if len(rutas_a) == 0:
+            print("No hay rutas para A")
+            exit(0)
+        if len(rutas_b) == 0:
+            print("No hay rutas para B")
+            exit(0)
         root = Ju.tk.Tk()
         app = Ju.Ajedrez(root, rutas_a, rutas_b, cadenaA, cadenaB)
         root.mainloop()
